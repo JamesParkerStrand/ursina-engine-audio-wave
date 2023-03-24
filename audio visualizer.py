@@ -6,7 +6,7 @@ import AudioPlayer
 
 app = Ursina()
 
-file = "first snow antent"
+file = "your audio here"
 
 audioData = AudioPlayer.AudioPlay(file + ".wav")
 
