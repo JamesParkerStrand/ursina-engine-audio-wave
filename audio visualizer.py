@@ -1,4 +1,3 @@
-import wave
 import numpy as np
 from scipy.io.wavfile import read
 from ursina import *
@@ -6,17 +5,13 @@ import AudioPlayer
 
 app = Ursina()
 
-file = "your audio here"
+file = "home - hold"
 
 audioData = AudioPlayer.AudioPlay(file + ".wav")
 
 audio = Audio(file + ".mp3")
 
-#audio_entity = Entity(model="cube")
-
-#audio_entity2 =  Entity(model="cube",position= (2,0,0))
-
-pointMeshes = Mesh(vertices = [], mode='point', thickness=0.5)
+pointMeshes = Mesh(vertices = [], mode='point', thickness=2)
 
 pointsToGraph = audioData.incrementor
 
@@ -25,13 +20,19 @@ for i in range(pointsToGraph):
 
 pointGraph = Entity(model=pointMeshes, position=(-pointsToGraph / 2,0,0))
 
+camera.z = -2800
+
 def update():
 
     audioData.incrementByFrameRateTick()
 
     leftChannel, rightChannel = audioData.sampleAmplitudeDataAtPosition()
 
-    sampleData = leftChannel[len(leftChannel) - pointsToGraph + 1: len(leftChannel) - 1]
+    stereo = np.stack((leftChannel,rightChannel))
+
+    mono = np.mean(stereo, axis=0)
+
+    sampleData = mono[len(leftChannel) - pointsToGraph: len(leftChannel)]
 
     for x in range(len(sampleData)):
         pointMeshes.vertices[x] = [x,0.01 * sampleData[x],0]
@@ -45,22 +46,3 @@ EditorCamera()
 app.run()
 
 
-# alternative code
-#wav_obj = wave.open("first snow antent.wav","rb")
-
-'''
-this is just alternative code
-
-sample_freq = wav_obj.getframerate()
-
-n_channels = wav_obj.getnchannels()
-
-n_samples = wav_obj.getnframes()
-
-signal_wave = wav_obj.readframes(n_samples)
-
-signal_array = np.frombuffer(signal_wave, dtype=np.int16)
-
-l_channel = signal_array[0::2]
-r_channel = signal_array[1::2]
-'''
